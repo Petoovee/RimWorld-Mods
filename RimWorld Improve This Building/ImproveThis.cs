@@ -2,6 +2,7 @@
 using RimWorld;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using Verse;
 using Verse.AI;
 
@@ -316,13 +317,13 @@ namespace RimWorld___Improve_This {
         public override Job JobOnThing(Pawn pawn, Thing t, bool forced = false) {
             ImproveThisComp c = t.TryGetComp<ImproveThisComp>();
             if (c == null || !c.improveRequested) return null;
-            List<ThingDefCountClass> mats = c.MaterialsNeeded().FindAll(
+            List<ThingDefCountClass> mats = c.TotalMaterialCost().FindAll(
                 m => m.count > 0
             );
             if (mats.Count > 0) {
                 // needs more materials
                 foreach (ThingDefCountClass mat in mats) {
-                    if (pawn.Map.itemAvailability.ThingsAvailableAnywhere(mat, pawn)) {
+                    if (pawn.Map.itemAvailability.ThingsAvailableAnywhere(mat.thingDef, mat.count, pawn)) {
                         Thing found = GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, ThingRequest.ForDef(mat.thingDef), PathEndMode.ClosestTouch, TraverseParms.For(pawn), 9999f, (Thing r) => ResourceValidator(pawn, mat, r));
                         if (found != null) {
                             Job job = JobMaker.MakeJob(ImproveThisHaulJobDef);
@@ -439,9 +440,9 @@ namespace RimWorld___Improve_This {
                     Log.Error("Could not deposit hauled thing in container: " + curJob.GetTarget(containerInd).Thing);
                     return;
                 }
-                int num = actor.carryTracker.CarriedThing.stackCount;
-                num = UnityEngine.Mathf.Min(GenConstruct.AmountNeededByOf((IConstructible)comp, actor.carryTracker.CarriedThing.def), num);
-                actor.carryTracker.innerContainer.TryTransferToContainer(actor.carryTracker.CarriedThing, thingOwner, num);
+                int carrying = actor.carryTracker.CarriedThing.stackCount;
+                int remaining = ((IConstructible)comp).ThingCountNeeded(actor.carryTracker.CarriedThing.def);
+                actor.carryTracker.innerContainer.TryTransferToContainer(actor.carryTracker.CarriedThing, thingOwner, Mathf.Min(carrying, remaining));
             };
             return toil;
         }
@@ -527,7 +528,7 @@ namespace RimWorld___Improve_This {
         {
             if (!OVERRIDE) {
                 if (!ImproveComp.improveRequested) return 0;
-                ThingDefCountClass tdcc = ImproveComp.MaterialsNeeded().Find(tdc => tdc.thingDef == item.def);
+                ThingDefCountClass tdcc = ImproveComp.TotalMaterialCost().Find(tdc => tdc.thingDef == item.def);
                 if (tdcc == null) return 0;
                 return tdcc.count;
             }
@@ -562,20 +563,27 @@ namespace RimWorld___Improve_This {
             return parent.Stuff;
         }
 
+        public bool IsCompleted() => false;
+
         private List<ThingDefCountClass> cachedMaterialsNeeded = new List<ThingDefCountClass>();
-        public List<ThingDefCountClass> MaterialsNeeded() {
+        public List<ThingDefCountClass> TotalMaterialCost() {
             cachedMaterialsNeeded.Clear();
             float returned = parent.def.resourcesFractionWhenDeconstructed;
             List<ThingDefCountClass> list = parent.def.CostListAdjusted(parent.Stuff, false);
-            for (int i = 0; i < list.Count; i++)
-            {
-                ThingDefCountClass thingDefCountClass = list[i];
-                int req = thingDefCountClass.count - (int)(thingDefCountClass.count * returned);
-                int num = GetDirectlyHeldThings().TotalStackCountOfDef(thingDefCountClass.thingDef);
-                int num2 = req - num;
-                if (num2 > 0) cachedMaterialsNeeded.Add(new ThingDefCountClass(thingDefCountClass.thingDef, num2));
+            foreach (ThingDefCountClass requiredItem in list) {
+                int required = requiredItem.count - (int)(requiredItem.count * returned);
+                int current = GetDirectlyHeldThings().TotalStackCountOfDef(requiredItem.thingDef);
+                int missing = required - current;
+                if (missing > 0) cachedMaterialsNeeded.Add(new ThingDefCountClass(requiredItem.thingDef, missing));
             }
             return cachedMaterialsNeeded;
+        }
+
+        public int ThingCountNeeded(ThingDef stuff) {
+            foreach (ThingDefCountClass thingNeeded in cachedMaterialsNeeded) {
+                if (thingNeeded.thingDef == stuff) return thingNeeded.count - GetDirectlyHeldThings().TotalStackCountOfDef(stuff);
+            }
+            return 0;
         }
 
         // useful numbers
@@ -616,7 +624,7 @@ namespace RimWorld___Improve_This {
 
             str.Append("ContainedResources".Translate() + ":");
             List<ThingDefCountClass> list = parent.def.CostListAdjusted(parent.Stuff, false);
-            List<ThingDefCountClass> needed = MaterialsNeeded();
+            List<ThingDefCountClass> needed = TotalMaterialCost();
             float returned = parent.def.resourcesFractionWhenDeconstructed;
             bool satisfied = true;
             for (int i = 0; i < list.Count; i++)
