@@ -317,7 +317,7 @@ namespace RimWorld___Improve_This {
         public override Job JobOnThing(Pawn pawn, Thing t, bool forced = false) {
             ImproveThisComp c = t.TryGetComp<ImproveThisComp>();
             if (c == null || !c.improveRequested) return null;
-            List<ThingDefCountClass> mats = c.TotalMaterialCost().FindAll(
+            List<ThingDefCountClass> mats = c.RemainingMaterialCost().FindAll(
                 m => m.count > 0
             );
             if (mats.Count > 0) {
@@ -528,7 +528,7 @@ namespace RimWorld___Improve_This {
         {
             if (!OVERRIDE) {
                 if (!ImproveComp.improveRequested) return 0;
-                ThingDefCountClass tdcc = ImproveComp.TotalMaterialCost().Find(tdc => tdc.thingDef == item.def);
+                ThingDefCountClass tdcc = ImproveComp.RemainingMaterialCost().Find(tdc => tdc.thingDef == item.def);
                 if (tdcc == null) return 0;
                 return tdcc.count;
             }
@@ -571,12 +571,20 @@ namespace RimWorld___Improve_This {
             float returned = parent.def.resourcesFractionWhenDeconstructed;
             List<ThingDefCountClass> list = parent.def.CostListAdjusted(parent.Stuff, false);
             foreach (ThingDefCountClass requiredItem in list) {
-                int required = requiredItem.count - (int)(requiredItem.count * returned);
-                int current = GetDirectlyHeldThings().TotalStackCountOfDef(requiredItem.thingDef);
-                int missing = required - current;
-                if (missing > 0) cachedMaterialsNeeded.Add(new ThingDefCountClass(requiredItem.thingDef, missing));
+                cachedMaterialsNeeded.Add(new ThingDefCountClass(requiredItem.thingDef, requiredItem.count - (int)(requiredItem.count * returned)));
             }
             return cachedMaterialsNeeded;
+        }
+        public List<ThingDefCountClass> RemainingMaterialCost() {
+            List<ThingDefCountClass> list = TotalMaterialCost();
+            List<ThingDefCountClass> newList = new List<ThingDefCountClass>();
+            foreach (ThingDefCountClass requiredItem in list) {
+                int required = requiredItem.count;
+                int current = GetDirectlyHeldThings().TotalStackCountOfDef(requiredItem.thingDef);
+                int missing = required - current;
+                if (missing > 0) newList.Add(new ThingDefCountClass(requiredItem.thingDef, missing));
+            }
+            return newList;
         }
 
         public int ThingCountNeeded(ThingDef stuff) {
@@ -624,7 +632,7 @@ namespace RimWorld___Improve_This {
 
             str.Append("ContainedResources".Translate() + ":");
             List<ThingDefCountClass> list = parent.def.CostListAdjusted(parent.Stuff, false);
-            List<ThingDefCountClass> needed = TotalMaterialCost();
+            List<ThingDefCountClass> needed = RemainingMaterialCost();
             float returned = parent.def.resourcesFractionWhenDeconstructed;
             bool satisfied = true;
             for (int i = 0; i < list.Count; i++)
