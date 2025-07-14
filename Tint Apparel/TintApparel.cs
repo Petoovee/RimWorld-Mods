@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using ColourPicker;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace Tint_Apparel
+namespace TintApparel
 {
     public class CompAutoColor : ThingComp
     {

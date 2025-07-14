@@ -5,7 +5,7 @@ using System;
 using UnityEngine;
 using Verse;
 
-namespace Tint_Apparel {
+namespace ColourPicker {
     public class TextField<T> {
         private T _value;
         private readonly string _id;

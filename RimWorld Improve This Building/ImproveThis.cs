@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
-using HarmonyLib;
+﻿using HarmonyLib;
 using RimWorld;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Verse;
 using Verse.AI;
 
-namespace RimWorld_Improve_This_Building {
+namespace RimWorld___Improve_This {
     public class ImproveThis_Mod : Mod {
         public static ImproveThis_Settings Settings;
         public ImproveThis_Mod(ModContentPack content) : base(content) {

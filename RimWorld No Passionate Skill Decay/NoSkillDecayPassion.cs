@@ -2,7 +2,7 @@
 using RimWorld;
 using Verse;
 
-namespace RimWorld_No_Passionate_Skill_Decay
+namespace RimWorld___No_Passionate_Skill_Decay
 {
     // TODO: split xp gains into temporary and permanent xp?
 
