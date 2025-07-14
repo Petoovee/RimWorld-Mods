@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 
-namespace TintApparel
+namespace Tint_Apparel
 {
     public class RGBHSVHolder
     {

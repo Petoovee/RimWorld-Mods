@@ -7,7 +7,7 @@ using System.IO;
 using UnityEngine;
 using Verse;
 
-namespace ColourPicker {
+namespace Tint_Apparel {
     public class RecentColours {
         private const int max = 20;
         private static List<Color> _colors = new List<Color>();

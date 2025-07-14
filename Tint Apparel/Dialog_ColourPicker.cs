@@ -3,12 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
 using Verse;
 using Object = UnityEngine.Object;
 
-namespace ColourPicker {
+namespace Tint_Apparel {
     public class Dialog_ColourPicker: Window {
         private controls _activeControl = controls.none;
 

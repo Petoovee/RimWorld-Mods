@@ -1,9 +1,9 @@
-﻿using HarmonyLib;
+﻿using System.Collections.Generic;
+using HarmonyLib;
 using RimWorld;
-using System.Collections.Generic;
 using Verse;
 
-namespace RimWorld___Better_Infections
+namespace RimWorld_Better_Infections
 {
     public class BetInfMod : Mod {
         public BetInfMod(ModContentPack content) : base(content) {
