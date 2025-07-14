@@ -11,7 +11,7 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-    <ProjectGuid>{DBE2A5C4-D8EA-4D35-A94E-256DA8237769}</ProjectGuid>
+    <ProjectGuid>{2fe591d8-c532-4be7-8164-2914181e8ba2}</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
