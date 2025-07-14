@@ -188,8 +188,6 @@ namespace RimWorld_Improve_This_Building {
             soundSucceeded = SoundDefOf.Designate_Haul;
         }
 
-        public override int DraggableDimensions => 2;
-
         public override AcceptanceReport CanDesignateCell(IntVec3 p) {
             Map map = Find.CurrentMap;
             if (!GenGrid.InBounds(p, map) || GridsUtility.Fogged(p, map)) return AcceptanceReport.WasRejected;
@@ -246,8 +244,6 @@ namespace RimWorld_Improve_This_Building {
             useMouseIcon = true;
             soundSucceeded = SoundDefOf.Designate_Haul;
         }
-
-        public override int DraggableDimensions => 2;
 
         public override AcceptanceReport CanDesignateCell(IntVec3 p) {
             Map map = Find.CurrentMap;
