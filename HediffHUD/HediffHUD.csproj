@@ -24,7 +24,7 @@
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugType>pdbonly</DebugType>
+        <DebugType>none</DebugType>
         <Optimize>true</Optimize>
         <OutputPath>bin\Release\</OutputPath>
         <DefineConstants>TRACE</DefineConstants>
@@ -34,12 +34,15 @@
     <ItemGroup>
         <Reference Include="0Harmony">
           <HintPath>..\RimWorld Improve This Building\0Harmony.dll</HintPath>
+            <Private>False</Private>
         </Reference>
         <Reference Include="Assembly-CSharp">
           <HintPath>/games/SteamLibrary/steamapps/common/RimWorld/RimWorldLinux_Data/Managed/Assembly-CSharp.dll</HintPath>
+            <Private>False</Private>
         </Reference>
         <Reference Include="Unity-Core">
           <HintPath>/games/SteamLibrary/steamapps/common/RimWorld/RimWorldLinux_Data/Managed/UnityEngine.CoreModule.dll</HintPath>
+            <Private>False</Private>
         </Reference>
         <Reference Include="System" />
         <Reference Include="System.Core" />
